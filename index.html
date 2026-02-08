@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>安晚安项目 | 123网盘资源导航</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 播放器所需的jQuery库 -->
+    <script type="text/javascript" src="https://myhkw.cn/player/js/jquery.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0 20px;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            color: #1e40af;
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+            margin-bottom: 15px;
+        }
+        
+        .search-box {
+            max-width: 700px;
+            margin: 30px auto;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 16px 25px;
+            border: 2px solid #cbd5e1;
+            border-radius: 50px;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        .search-box input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+        }
+        
+        .search-box button {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .search-box button:hover {
+            background: #2563eb;
+        }
+        
+        .categories {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .category {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .category:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+        
+        .category h3 {
+            color: #1e40af;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .category h3 i {
+            margin-right: 10px;
+            color: #3b82f6;
+        }
+        
+        .links {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .link-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            background: #f8fafc;
+            border-radius: 8px;
+            text-decoration: none;
+            color: #475569;
+            transition: all 0.2s;
+        }
+        
+        .link-item:hover {
+            background: #e0f2fe;
+            color: #0369a1;
+            transform: translateX(5px);
+        }
+        
+        .link-item i {
+            margin-right: 12px;
+            color: #3b82f6;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .link-item span {
+            font-weight: 500;
+        }
+        
+        .player-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 40px 0;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .player-section h3 {
+            color: #1e40af;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .player-section h3 i {
+            margin-right: 10px;
+            color: #3b82f6;
+        }
+        
+        #player-container {
+            width: 100%;
+            min-height: 500px;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #f1f5f9;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+        }
+        
+        .player-loading {
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .player-loading i {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: #3b82f6;
+        }
+        
+        .favorite-tips {
+            background: #fff7ed;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 40px 0;
+            border-left: 5px solid #f97316;
+        }
+        
+        .favorite-tips h3 {
+            color: #ea580c;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .favorite-tips h3 i {
+            margin-right: 10px;
+        }
+        
+        .tips-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .tip {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid #e2e8f0;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .categories {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .search-box {
+                margin: 20px auto;
+            }
+            
+            #player-container {
+                min-height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>安晚安项目</h1>
+            <p class="subtitle">专注于123网盘资源分享的导航站点</p>
+        </header>
+        
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="搜索资源或直接输入123网盘链接...">
+            <button id="searchBtn">快速搜索</button>
+        </div>
+        
+        <div class="categories">
+            <div class="category">
+                <h3><i class="fas fa-cloud-upload-alt"></i> 常用网盘</h3>
+                <div class="links">
+                    <a href="https://www.123pan.com" target="_blank" class="link-item">
+                        <i class="fas fa-hdd"></i>
+                        <span>123网盘官方</span>
+                    </a>
+                    <a href="https://www.aliyundrive.com" target="_blank" class="link-item">
+                        <i class="fab fa-alipay"></i>
+                        <span>阿里云盘</span>
+                    </a>
+                    <a href="https://pan.baidu.com" target="_blank" class="link-item">
+                        <i class="fas fa-cloud"></i>
+                        <span>百度网盘</span>
+                    </a>
+                    <a href="https://www.terabox.com" target="_blank" class="link-item">
+                        <i class="fas fa-box"></i>
+                        <span>TeraBox网盘</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <h3><i class="fas fa-film"></i> 影视资源</h3>
+                <div class="links">
+                    <a href="https://www.123pan.com/s/kv8KVv-1F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-video"></i>
+                        <span>电影资源合集</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-2F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-tv"></i>
+                        <span>电视剧合集</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-3F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-file-video"></i>
+                        <span>动漫资源库</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-4F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-compact-disc"></i>
+                        <span>纪录片专区</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <h3><i class="fas fa-laptop-code"></i> 软件工具</h3>
+                <div class="links">
+                    <a href="https://www.123pan.com/s/kv8KVv-5F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-desktop"></i>
+                        <span>Windows软件</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-6F3gh" target="_blank" class="link-item">
+                        <i class="fab fa-apple"></i>
+                        <span>Mac软件资源</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-7F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-mobile-alt"></i>
+                        <span>手机APP合集</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-8F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-tools"></i>
+                        <span>实用工具包</span>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="category">
+                <h3><i class="fas fa-book"></i> 学习资源</h3>
+                <div class="links">
+                    <a href="https://www.123pan.com/s/kv8KVv-9F3gh" target="_blank" class="link-item">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>课程教程合集</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-aF3gh" target="_blank" class="link-item">
+                        <i class="fas fa-book-open"></i>
+                        <span>电子书资源库</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-bF3gh" target="_blank" class="link-item">
+                        <i class="fas fa-language"></i>
+                        <span>外语学习资料</span>
+                    </a>
+                    <a href="https://www.123pan.com/s/kv8KVv-cF3gh" target="_blank" class="link-item">
+                        <i class="fas fa-code"></i>
+                        <span>编程开发资料</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 播放器区域 -->
+        <div class="player-section">
+            <h3><i class="fas fa-music"></i> 在线播放器</h3>
+            <div id="player-container">
+                <div class="player-loading">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>正在加载播放器...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="favorite-tips">
+            <h3><i class="fas fa-lightbulb"></i> 资源使用技巧</h3>
+            <p>以下是一些快速获取资源的技巧，帮助您更好地使用123网盘资源：</p>
+            <div class="tips-list">
+                <div class="tip">1. 使用123网盘客户端下载可获得更快的下载速度</div>
+                <div class="tip">2. 遇到需要提取码的资源，可尝试常用密码如：1234、8888、awake</div>
+                <div class="tip">3. 定期清理浏览器缓存，确保资源链接正常访问</div>
+                <div class="tip">4. 使用搜索功能快速定位您需要的资源类型</div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>安晚安项目 &copy; 2023 | 专注于123网盘资源分享 | 仅供学习交流使用</p>
+            <p style="margin-top: 10px;">提示：所有资源均来自网络分享，请遵守相关法律法规</p>
+        </footer>
+    </div>
+
+    <script>
+        // 搜索功能
+        document.getElementById('searchBtn').addEventListener('click', function() {
+            const searchInput = document.getElementById('searchInput').value.trim();
+            if (searchInput) {
+                // 如果输入的是网址，直接跳转
+                if (searchInput.startsWith('http')) {
+                    window.open(searchInput, '_blank');
+                } else {
+                    // 否则使用百度搜索
+                    window.open(`https://www.baidu.com/s?wd=${encodeURIComponent(searchInput + ' 123网盘')}`, '_blank');
+                }
+            }
+        });
+        
+        // 按Enter键也可以搜索
+        document.getElementById('searchInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                document.getElementById('searchBtn').click();
+            }
+        });
+        
+        // 添加链接点击统计（简单示例）
+        document.querySelectorAll('.link-item').forEach(link => {
+            link.addEventListener('click', function() {
+                const linkName = this.querySelector('span').textContent;
+                console.log(`访问了: ${linkName}`);
+            });
+        });
+        
+        // 加载播放器 - 确保在页面加载完成后执行
+        document.addEventListener('DOMContentLoaded', function() {
+            // 等待jQuery加载完成
+            if (typeof jQuery === 'undefined') {
+                console.error('jQuery未加载成功，播放器可能无法正常工作');
+                return;
+            }
+            
+            // 创建播放器脚本
+            var script = document.createElement("script");
+            script.setAttribute("type","text/javascript");
+            script.setAttribute("id","myhk");
+            script.setAttribute("src","https://myhkw.cn/api/player/177054120012");
+            script.setAttribute("key","177054120012");
+            script.setAttribute("m","1");
+            
+            // 脚本加载成功后的回调
+            script.onload = function() {
+                console.log('播放器脚本加载成功');
+                // 隐藏加载提示
+                document.querySelector('.player-loading').style.display = 'none';
+            };
+            
+            // 脚本加载失败的回调
+            script.onerror = function() {
+                console.error('播放器脚本加载失败');
+                document.querySelector('.player-loading').innerHTML = 
+                    '<i class="fas fa-exclamation-triangle"></i><p>播放器加载失败，请刷新页面重试</p>';
+            };
+            
+            // 将脚本添加到页面
+            document.documentElement.appendChild(script);
+        });
+    </script>
+</body>
+</html>
